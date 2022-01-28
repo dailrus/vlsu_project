@@ -10,7 +10,7 @@ from pystray import MenuItem as item
 import pystray
 from PIL import Image
 
-bot = telebot.TeleBot('5066423829:AAHBWY-zsULrIF3uDBeO30EQT_hIrHmBrd0', parse_mode=None) 
+bot = telebot.TeleBot(token='', parse_mode=None) 
 
 image = Image.open(r"d:\projects\IT\vlsu_project\src\icon.ico")
 
