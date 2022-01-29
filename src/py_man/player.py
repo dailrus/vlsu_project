@@ -19,6 +19,7 @@ class Player:
             self.isGod = False
         else:
             self.isGod = True
+        return round(10 - (time.monotonic() - self.op_timer), 2)
     def update_position(self,game_field,x,y):
         global score
         moved = False
@@ -26,8 +27,11 @@ class Player:
         prev_pos = [self.x_pos, self.y_pos]
         if time.monotonic() - self.prev >= 0.5:
             self.prev = time.monotonic()
-            if direction == 0 and not (self.x_pos == 0) and not (game_field[self.y_pos][self.x_pos-1]=='#'):
-                self.x_pos-=1
+            if direction == 0 and not (game_field[self.y_pos][self.x_pos-1]=='#'):
+                if not (self.x_pos == 0):
+                    self.x_pos-=1
+                else:
+                    self.x_pos = x-1
                 moved = True
                 if game_field[self.y_pos][self.x_pos-1] == '.':
                     self.score += 1
@@ -44,7 +48,7 @@ class Player:
                 if (self.x_pos == x-1):
                     self.x_pos = 0
                     moved = True
-                elif (game_field[self.y_pos][self.x_pos]=='#'):
+                elif (game_field[self.y_pos][self.x_pos+1]=='#'):
                     pass
                 else:
                     self.x_pos+=1
@@ -53,7 +57,7 @@ class Player:
                     self.score+=1
                 if game_field[self.y_pos][self.x_pos] == 'P':
                     self.op = True
-            if direction == 3 and not (self.y_pos == y-1) and not (game_field[self.y_pos+1][self.x_pos]=='#'):
+            if direction == 3 and not (self.y_pos == y-1) and not (game_field[self.y_pos+1][self.x_pos] in ('#','-')):
                 self.y_pos+=1
                 if game_field[self.y_pos][self.x_pos] == 'P':
                     self.op = True
