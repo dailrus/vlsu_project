@@ -13,18 +13,24 @@ import winsound
 ## Карта ##
 
 ## Карта ##
-
-enemy1 = enemy.Enemy()
-enemy2 = enemy.Enemy()
-enemy3 = enemy.Enemy()
-player1 = player.Player()
-
 ##      Переменные      ##
 x = config.x
 y = config.y
 isWin = False
 
 ##########################
+enemies = []
+for enmy in range(3):
+    enmy = enemy.Enemy()
+    enemies.append(enmy)
+player1 = player.Player()
+def score():
+    total = player1.score
+    for en in enemies:
+        total += en.score
+    return total
+default_field = [[config.board[i+28*(j)] for i in range(0,x)] for j in range(0,y)]
+
 def reset_field():
     global game_field
     game_field = [[config.board[i+28*(j)] for i in range(0,x)] for j in range(0,y)]
@@ -46,19 +52,16 @@ def win_screen(screen):
         os._exit(1)
 def lost_sound():
     winsound.PlaySound('game_over.wav', winsound.SND_FILENAME)
-def demo(screen):
+def main_game(screen):
     while True:
         global y_pos, x_pos, changed, isWin
         prnt_tm = ''
-        if not enemy1.alive:
-            enemy1.place_enemy(game_field,config.enemy1_pos,'w')
-        if not enemy2.alive:    
-            enemy2.place_enemy(game_field,config.enemy2_pos,'t')   
-        if not enemy3.alive:    
-            enemy3.place_enemy(game_field,config.enemy3_pos,'i')
+        for i in range(len(enemies)):
+            if not enemies[i].alive:
+                enemies[i].place_enemy(game_field,config.enemies_pos[i],config.enemy_letters[i])
         for j in range(0,y):
             for q in range(0,x):
-                if (j == enemy1.y_pos and q == enemy1.x_pos) or (j == enemy2.y_pos and q == enemy2.x_pos) or (j == enemy3.y_pos and q == enemy3.x_pos):
+                if (j == enemies[0].y_pos and q == enemies[0].x_pos) or (j == enemies[1].y_pos and q == enemies[1].x_pos) or (j == enemies[2].y_pos and q == enemies[2].x_pos):
                     bg_col = 1
                     fn_col = 2
                 elif j == player1.y_pos and q == player1.x_pos:
@@ -72,7 +75,7 @@ def demo(screen):
                     fn_col = 7     
                 screen.print_at(game_field[j][q],q+(screen.width // 2 - x//2),j+(screen.height // 2 - y//2),bg=bg_col,colour=fn_col)
             screen.print_at('',x+1,j)
-        screen.print_at('Score: '+str(player1.score),(screen.width // 2 - x//2)-3,(screen.height // 2 - y//2)-1, bg=6,colour=7)
+        screen.print_at('Score: '+str(score()),(screen.width // 2 - x//2)-3,(screen.height // 2 - y//2)-1, bg=6,colour=7)
         if config.isPlayerInvincible:
             god_bg = 2
             prnt_tm = str(player1.GodMode_handler())
@@ -104,14 +107,15 @@ def demo(screen):
             config.isGameOver = True
         if ev == (ord('g')):
             player1.op_trigger = True
-        player1.update_position(game_field, x, y)
+        if ev == (ord('o')):
+            isWin = True
+        player1.update_position(game_field,default_field, x, y)
         player1.GodMode_handler()
-        enemy1.enemy_update(game_field,player1.x_pos,player1.y_pos)
-        enemy2.enemy_update(game_field,player1.x_pos,player1.y_pos)
-        enemy3.enemy_update(game_field,player1.x_pos,player1.y_pos)
+        for i in range(len(enemies)):
+            enemies[i].enemy_update(game_field,player1.x_pos,player1.y_pos)
         if config.isGameOver:
             break
-        if player1.score == 210:
+        if player1.score == 21300:
             isWin = True
             break
         screen.refresh()
@@ -119,7 +123,7 @@ def demo(screen):
 
 player1.place_player(game_field)
 #winsound.PlaySound('start.wav', winsound.SND_FILENAME)
-Screen.wrapper(demo)
+Screen.wrapper(main_game)
 
 if config.isGameOver:
     lost_thr = threading.Thread(target=lost_sound)

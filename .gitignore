@@ -1,3 +1,12 @@
 test_base.db
 src/icon.ico
 src/py_man/check.py
+src/py_man/main.py
+src/py_man/build/
+src/py_man/dist/
+doc.aux
+doc.log
+doc.pdf
+doc.synctex.gz
+doc.tex
+doc.toc
